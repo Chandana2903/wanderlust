@@ -1,0 +1,14 @@
+<div class="container-fluid border-bottom py-3">
+  <div class="d-flex justify-content-center gap-4 overflow-auto">
+
+    <% const cats = ["Trending","Rooms","Cities","Mountains","Camping","Pools"]; %>
+
+    <% cats.forEach(c => { %>
+      <a href="/listings?category=<%= c %>" class="text-center text-decoration-none text-dark">
+        <i class="fa-solid fa-fire"></i>
+        <div style="font-size:13px"><%= c %></div>
+      </a>
+    <% }) %>
+
+  </div>
+</div>

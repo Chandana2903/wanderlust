@@ -1,0 +1,42 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-4">
+  <h3 class="mb-3">Your Travel Wishlist ✈️</h3>
+
+  <form action="/travel" method="POST" class="d-flex gap-2 mb-4">
+    <input
+      type="text"
+      name="location"
+      class="form-control"
+      placeholder="Add destination (e.g. Goa)"
+      required
+    >
+    <button class="btn btn-danger">Add</button>
+  </form>
+
+  <% if (plans.length === 0) { %>
+    <p class="text-muted">No destinations added yet.</p>
+  <% } %>
+
+  <div class="row g-3">
+    <% plans.forEach(plan => { %>
+      <div class="col-md-4">
+        <div class="card travel-card h-100">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="fa-solid fa-location-dot text-danger"></i>
+              <%= plan.location %>
+            </h5>
+
+            <a
+              href="/travel/<%= plan._id %>/recommendations"
+              class="btn btn-outline-primary btn-sm mt-2"
+            >
+              See stays →
+            </a>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>

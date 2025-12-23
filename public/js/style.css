@@ -1,0 +1,587 @@
+body{
+    font-family:"Plus jakarta Sans","sans-serif" !important;
+}
+.navbar {
+  height: 4 rem;           /* ⬅ reduced from 5rem */
+  padding: 0 1rem;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.fa-compass {
+  font-size: 1.6rem;
+}
+
+.nav-link {
+  font-size: 0.85rem;
+}
+.owner-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1.5rem;
+}
+
+/* ================= STICKY FOOTER ================= */
+
+.footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e5e5e5;
+}
+
+.f-info {
+  font-size: 0.9rem;
+}
+
+.f-info-socials i {
+  margin: 0 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #555;
+}
+
+.f-info-socials i:hover {
+  color: #ff385c; /* Airbnb red */
+}
+
+.f-info-links a {
+  margin: 0 8px;
+  text-decoration: none;
+  color: #555;
+}
+
+.f-info-links a:hover {
+  text-decoration: underline;
+}
+
+
+/* ---------- MOBILE VIEW ---------- */
+@media (max-width: 576px) {
+  .f-info {
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.card{
+    border: none !important;
+    margin:1rem ;
+}
+.card-img-top{
+    border-radius: 1 rem !important;
+    width:100% !important;
+    object-fit: cover !important;
+}
+.card body{
+    padding: 0 !important;
+}
+.card-text p{
+    font-weight: 400;
+}.show-img{
+    height:30vh;
+    
+}.card {
+  border-radius: 12px;
+}
+
+#rating {
+  cursor: pointer;
+}
+
+textarea {
+  resize: none;
+}
+
+
+.bg-orange {
+  background: linear-gradient(135deg, #ff7a18, #ff9f1c);
+}
+
+.text-orange {
+  color: #ff7a18;
+}
+
+.btn-orange {
+  background-color: #ff7a18;
+  border: none;
+}
+
+.btn-orange:hover {
+  background-color: #e86c12;
+}
+/* Airbnb-style navbar */
+.airbnb-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+/* Hover underline animation */
+.nav-underline {
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #FF385C; /* Airbnb red */
+  transition: width 0.3s ease;
+}
+
+.nav-underline:hover::after {
+  width: 100%;
+}
+
+/* Dropdown polish */
+.dropdown-menu {
+  border-radius: 12px;
+  padding: 0.5rem 0;
+}
+
+/* Remove harsh focus outline */
+.navbar a:focus {
+  box-shadow: none;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+/* REVIEW CARD */
+.review-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* STAR INPUT (LIKE YOUR IMAGE) */
+.star-input {
+  display: flex;
+  gap: 6px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.star-input span {
+  color: #d1d5db; /* gray */
+  transition: color 0.2s;
+}
+
+.star-input span.active {
+  color: #facc15; /* yellow */
+}
+
+/* DISPLAY STARS */
+.star-display {
+  color: #facc15;
+  font-size: 18px;
+}
+/* STAR INPUT */
+.star-input span {
+  font-size: 20px;
+  cursor: pointer;
+  color: #d1d5db;
+}
+
+.star-input span.active {
+  color: #facc15;
+}
+
+/* STAR DISPLAY */
+.star-display {
+  color: #facc15;
+  font-size: 16px;
+}
+.review-form {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+.reviews-box {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 12px;
+}
+
+.review-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+@media (max-width: 576px) {
+  .show-img {
+    height: 220px;
+  }
+
+  .owner-actions {
+    flex-direction: column;
+  }
+}
+/* ---------- SHOW LISTING SIZE CONTROL ---------- */
+.show-listing-card {
+  max-width: 520px;   /* ⬅ narrower */
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.show-clickable-img {
+  height: 340px;      /* ⬅ taller image */
+  object-fit: cover;
+  cursor: zoom-in;
+  transition: transform 0.3s ease;
+}
+
+.show-clickable-img:hover {
+  transform: scale(1.02);
+}
+
+/* ---------- IMAGE MODAL ---------- */
+.image-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.9);
+  justify-content: center;
+  align-items: center;
+}
+
+.image-modal-content {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+}
+
+.close-modal {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 36px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.close-modal:hover {
+  color: #ff4d4d;
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 576px) {
+  .show-listing-card {
+    max-width: 95%;
+  }
+
+  .show-clickable-img {
+    height: 260px;
+  }
+}
+#map {
+  height: 280px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+.airbnb-card {
+  position: relative;
+}
+
+.wishlist-form {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.wishlist-btn {
+  background: white;
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  opacity: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  transition: 0.2s;
+}
+
+.airbnb-card:hover .wishlist-btn {
+  opacity: 1;
+}
+
+.wishlist-btn i {
+  font-size: 18px;
+}
+.remove-wishlist-form {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 10;
+}
+
+.remove-wishlist-btn {
+  background: white;
+  border: none;
+  border-radius: 50%;
+  padding: 6px 10px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+/* SEARCH BAR */
+.search-bar-wrapper {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  padding: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  gap: 6px;
+}
+
+/* INPUT */
+.search-pill-input {
+  border: none;
+  outline: none;
+  padding: 10px 16px;
+  width: 300px;
+  font-size: 14px;
+  border-radius: 999px;
+}
+
+/* SEARCH BUTTON */
+.search-pill-btn {
+  background: #ff385c;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.search-pill-btn:hover {
+  background: #e11d48;
+}
+
+/* FILTER ICON */
+.filter-icon-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  position: relative;
+}
+
+.filter-icon-wrapper:hover {
+  background: #f7f7f7;
+}
+
+/* FILTER TEXT (HIDDEN UNTIL HOVER) */
+.filter-text {
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.filter-icon-wrapper:hover .filter-text {
+  opacity: 1;
+}
+
+/* FILTER PANEL ANIMATION */
+#filterPanel {
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.category-picker .category-icon {
+  cursor: pointer;
+  text-align: center;
+  color: #777;
+}
+
+.category-picker .category-icon i {
+  font-size: 22px;
+}
+
+.category-picker .category-icon span {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.category-picker .category-icon.selected {
+  color: black;
+  border-bottom: 2px solid black;
+}
+/* ===== SEARCH PILL ===== */
+.search-pill {
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  padding: 6px 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background: #fff;
+}
+
+.search-pill-input {
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  width: 220px;
+  font-size: 14px;
+}
+
+.pill-divider {
+  width: 1px;
+  height: 24px;
+  background: #ddd;
+  margin: 0 8px;
+}
+
+.filter-pill-btn {
+  border: none;
+  background: #ff385c;
+  color: white;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-pill-btn:hover {
+  background: #e0314b;
+}
+
+/* ===== NAV LINKS ===== */
+.nav-link-pill {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 20px;
+}
+
+.nav-link-pill:hover {
+  background: #f7f7f7;
+}
+
+.travel-card {
+  border-radius: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.travel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+/* ================= MOOD FILTER (HORIZONTAL) ================= */
+
+.mood-trigger {
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+.mood-menu {
+  padding: 10px 12px;
+  border-radius: 14px;
+  min-width: unset;
+}
+
+.mood-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.mood-btn {
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.mood-btn:hover {
+  background: #f8f9fa;
+}
+
+.mood-btn.active {
+  background: #fff1f2;
+  border-color: #dc3545;
+  color: #dc3545;
+  font-weight: 500;
+}
+/* ===== BOOKING CALENDAR UI ===== */
+
+.booking-card {
+  border-radius: 14px;
+}
+
+.date-input-wrapper {
+  position: relative;
+}
+
+.date-input-wrapper i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  pointer-events: none;
+}
+
+.date-input {
+  padding-left: 38px;
+  border-radius: 10px;
+  height: 44px;
+  font-size: 0.95rem;
+}
+
+/* Disabled date look */
+input[type="date"]:disabled {
+  background-color: #f1f1f1;
+  cursor: not-allowed;
+}
+
+/* Focus */
+.date-input:focus {
+  border-color: #ff385c;
+  box-shadow: 0 0 0 0.15rem rgba(255, 56, 92, 0.25);
+}
+#cat{
+  margin-left: 55px;
+}

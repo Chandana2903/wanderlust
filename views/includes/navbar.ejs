@@ -1,0 +1,105 @@
+<nav class="navbar sticky-top bg-white border-bottom">
+  <div class="container-fluid px-4 align-items-center">
+
+    <!-- ================= LOGO ================= -->
+    <a
+      class="navbar-brand fw-bold text-danger d-flex align-items-center gap-2"
+      href="/listings"
+    >
+      <i class="fa-solid fa-compass fs-4"></i>
+      Wanderlust
+    </a>
+
+    <!-- ================= SEARCH + FILTER (DESKTOP ONLY) ================= -->
+    <div class="search-pill d-none d-md-flex align-items-center">
+
+      <i class="fa-solid fa-magnifying-glass text-muted ms-3"></i>
+
+      <input
+        type="text"
+        id="searchInput"
+        class="search-pill-input"
+        placeholder="Search destinations"
+      >
+
+      <div class="pill-divider"></div>
+
+      <button
+        type="button"
+        class="filter-pill-btn"
+        onclick="toggleFilters()"
+        title="Filters"
+      >
+        <i class="fa-solid fa-sliders"></i>
+        <span>Filters</span>
+      </button>
+
+    </div>
+    <div id="searchSuggestions" class="search-suggestions d-none"></div>
+
+    <!-- ================= RIGHT SIDE ================= -->
+    <div class="d-flex align-items-center gap-4">
+
+      <% if (currUser) { %>
+
+        <!-- TRAVEL WISHLIST -->
+        <a href="/travel" class="nav-link-pill">
+          <i class="fa-solid fa-location-dot"></i>
+          Travel
+        </a>
+
+        <!-- DASHBOARD (USER VIEW) -->
+        <a href="/dashboard" class="nav-link-pill">
+          Dashboard
+        </a>
+
+        <!-- BECOME A HOST (SUBTLE CTA) -->
+        <a
+          href="/listings/new"
+          class="nav-link-pill text-danger fw-semibold"
+        >
+          <i class="fa-solid fa-house-circle-plus"></i>
+          Become a host
+        </a>
+
+      <% } %>
+
+      <!-- USER / AUTH DROPDOWN -->
+      <div class="dropdown">
+        <a
+          class="dropdown-toggle text-dark"
+          data-bs-toggle="dropdown"
+          role="button"
+        >
+          <i class="fa-solid fa-circle-user fs-4"></i>
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+          <% if (!currUser) { %>
+            <li>
+              <a class="dropdown-item" href="/users/login">
+                Login
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/users/signup">
+                Signup
+              </a>
+            </li>
+          <% } else { %>
+            <li class="dropdown-item-text fw-semibold">
+              Hello <%= currUser.username %>
+            </li>
+            <li><hr></li>
+            <li>
+              <a class="dropdown-item text-danger" href="/users/logout">
+                Logout
+              </a>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</nav>

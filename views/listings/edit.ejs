@@ -1,0 +1,185 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-4">
+
+  <!-- BACK BUTTON -->
+  <div class="mb-3">
+    <a
+      href="javascript:history.back()"
+      class="btn btn-light border d-inline-flex align-items-center gap-2"
+    >
+      <i class="fa-solid fa-arrow-left"></i>
+      Back
+    </a>
+  </div>
+
+  <h1 class="mb-4">Edit Your Listing</h1>
+
+  <form
+    method="POST"
+    action="/listings/<%= listing._id %>?_method=PUT"
+    enctype="multipart/form-data"
+  >
+
+    <!-- TITLE -->
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input
+        name="listing[title]"
+        value="<%= listing.title %>"
+        type="text"
+        class="form-control"
+        required
+      />
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea
+        name="listing[description]"
+        class="form-control"
+        rows="3"
+        required
+      ><%= listing.description %></textarea>
+    </div>
+
+    <!-- CURRENT IMAGE -->
+    <% if (listing.image && listing.image.url) { %>
+      <div class="mb-3">
+        <label class="form-label">Current Image</label>
+        <div class="border rounded p-2 text-center">
+          <img
+            src="<%= listing.image.url %>"
+            class="img-fluid rounded"
+            style="max-height: 250px; object-fit: cover;"
+          />
+        </div>
+      </div>
+    <% } %>
+
+    <!-- NEW IMAGE -->
+    <div class="mb-3">
+      <label class="form-label">Replace Image (optional)</label>
+      <input
+        type="file"
+        name="image"
+        id="imageInput"
+        class="form-control"
+        accept="image/*"
+      />
+    </div>
+
+    <!-- IMAGE PREVIEW -->
+    <div class="mb-3 d-none" id="previewContainer">
+      <label class="form-label">New Image Preview</label>
+      <div class="border rounded p-2 text-center">
+        <img
+          id="previewImage"
+          class="img-fluid rounded"
+          style="max-height: 250px; object-fit: cover;"
+        />
+      </div>
+    </div>
+
+    <!-- PRICE -->
+    <div class="mb-3">
+      <label class="form-label">Price (INR)</label>
+      <input
+        name="listing[price]"
+        value="<%= listing.price %>"
+        type="number"
+        class="form-control"
+        required
+      />
+    </div>
+
+    <!-- CATEGORY -->
+    <div class="mb-3">
+      <label class="form-label">Category</label>
+      <select name="listing[category]" class="form-select" required>
+        <option disabled>Select category</option>
+        <option value="Rooms" <%= listing.category==="Rooms"?"selected":"" %>>Rooms</option>
+        <option value="Iconic Cities" <%= listing.category==="Iconic Cities"?"selected":"" %>>Iconic Cities</option>
+        <option value="Mountains" <%= listing.category==="Mountains"?"selected":"" %>>Mountains</option>
+        <option value="Castles" <%= listing.category==="Castles"?"selected":"" %>>Castles</option>
+        <option value="Amazing Pools" <%= listing.category==="Amazing Pools"?"selected":"" %>>Amazing Pools</option>
+        <option value="Camping" <%= listing.category==="Camping"?"selected":"" %>>Camping</option>
+        <option value="Farms" <%= listing.category==="Farms"?"selected":"" %>>Farms</option>
+        <option value="Arctic" <%= listing.category==="Arctic"?"selected":"" %>>Arctic</option>
+        <option value="Domes" <%= listing.category==="Domes"?"selected":"" %>>Domes</option>
+        <option value="Boats" <%= listing.category==="Boats"?"selected":"" %>>Boats</option>
+      </select>
+    </div>
+
+    <!-- COUNTRY -->
+    <div class="mb-3">
+      <label class="form-label">Country</label>
+      <input
+        name="listing[country]"
+        value="<%= listing.country %>"
+        type="text"
+        class="form-control"
+        required
+      />
+    </div>
+
+    <!-- LOCATION -->
+    <div class="mb-3">
+      <label class="form-label">Location</label>
+      <input
+        name="listing[location]"
+        value="<%= listing.location %>"
+        type="text"
+        class="form-control"
+        required
+      />
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="d-flex justify-content-between">
+      <a href="/listings/<%= listing._id %>" class="btn btn-secondary">
+        Cancel
+      </a>
+      <button type="submit" class="btn btn-primary">
+        Save Changes
+      </button>
+    </div>
+
+  </form>
+</div>
+<!-- Fullscreen Loading Overlay -->
+<div id="loadingOverlay" style="
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #444;
+  display: none;
+">
+  <div class="spinner-border text-primary" role="status"></div>
+  <span class="ms-3">Processing...</span>
+</div>
+
+<script>
+  const imageInput = document.getElementById("imageInput");
+  const previewContainer = document.getElementById("previewContainer");
+  const previewImage = document.getElementById("previewImage");
+
+  imageInput?.addEventListener("change", () => {
+    const file = imageInput.files[0];
+    if (!file) return previewContainer.classList.add("d-none");
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      previewImage.src = reader.result;
+      previewContainer.classList.remove("d-none");
+    };
+    reader.readAsDataURL(file);
+  });
+</script>

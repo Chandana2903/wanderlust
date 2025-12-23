@@ -1,0 +1,198 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-4">
+
+  <!-- ================= FILTER PANEL ================= -->
+  <div id="filterPanel" class="container mt-3 d-none">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="row g-4 align-items-end">
+
+          <!-- LOCATION -->
+          <div class="col-md-5">
+            <label class="form-label">Location</label>
+            <input
+              id="locationFilter"
+              class="form-control"
+              placeholder="Enter location"
+            >
+          </div>
+
+          <!-- PRICE -->
+          <div class="col-md-5">
+            <label class="form-label">
+              Max Price: ₹<span id="priceValue">5000</span>
+            </label>
+            <input
+              type="range"
+              id="priceRange"
+              min="0"
+              max="10000"
+              step="500"
+              value="5000"
+              class="form-range"
+            >
+          </div>
+
+          <!-- ACTION BUTTONS -->
+<div class="col-md-2 d-grid gap-2">
+  <button id="applyFilters" class="btn btn-danger">
+    Set
+  </button>
+  <button id="clearFilters" class="btn btn-outline-secondary">
+    Clear
+  </button>
+</div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CATEGORY + MOOD BAR ================= -->
+  <div class="container mb-4">
+    <div class="d-flex align-items-center justify-content-between">
+
+      <!-- CATEGORY BAR (LEFT) -->
+      <div class="category-bar d-flex gap-4 overflow-auto" id="cat">
+
+        <% const categories = [
+          { name: "Rooms", icon: "fa-bed" },
+          { name: "Iconic Cities", icon: "fa-city" },
+          { name: "Mountains", icon: "fa-mountain" },
+          { name: "Castles", icon: "fa-chess-rook" },
+          { name: "Amazing Pools", icon: "fa-water" },
+          { name: "Camping", icon: "fa-campground" },
+          // { name: "Farms", icon: "fa-tractor" },
+          { name: "Arctic", icon: "fa-snowflake" },
+          { name: "Domes", icon: "fa-igloo" },
+          { name: "Boats", icon: "fa-ship" }
+        ]; %>
+
+        <% categories.forEach(cat => { %>
+          <div
+            class="category-item"
+            data-category="<%= cat.name.toLowerCase().trim() %>"
+          >
+            <i class="fa-solid <%= cat.icon %>"></i>
+            <span><%= cat.name %></span>
+          </div>
+        <% }) %>
+
+      </div>
+
+      <!-- MOOD DROPDOWN (RIGHT, LOGGED IN ONLY) -->
+      <% if (currUser) { %>
+        <div class="dropdown ms-3 flex-shrink-0">
+          <div class="dropdown ms-auto">
+
+  <button
+    class="btn mood-trigger dropdown-toggle"
+    data-bs-toggle="dropdown"
+  >
+    🎯 Mood
+  </button>
+
+  <div class="dropdown-menu dropdown-menu-end mood-menu shadow">
+
+    <div class="mood-row">
+
+      <button class="mood-btn active" data-mood="">
+        🌍 All
+      </button>
+
+      <button class="mood-btn" data-mood="relax">
+        🧘 Relax
+      </button>
+
+      <button class="mood-btn" data-mood="adventure">
+        🏔 Adventure
+      </button>
+
+      <button class="mood-btn" data-mood="romantic">
+        💑 Romantic
+      </button>
+
+      <button class="mood-btn" data-mood="family">
+        👨‍👩‍👧 Family
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+
+      <% } %>
+
+    </div>
+  </div>
+
+  <!-- ================= LISTINGS GRID ================= -->
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4">
+
+    <% alllistings.forEach(listing => { %>
+      <div class="col">
+        <div
+          class="card h-100 shadow-sm airbnb-card position-relative listing-card"
+          data-title="<%= listing.title.toLowerCase() %>"
+          data-location="<%= listing.location.toLowerCase() %>"
+          data-price="<%= listing.price || 0 %>"
+          data-category="<%= (listing.category || 'rooms').toLowerCase().trim() %>"
+        >
+
+          <!-- IMAGE -->
+          <a href="/listings/<%= listing._id %>">
+            <img
+              src="<%= listing.image?.url %>"
+              class="card-img-top rounded-4"
+              style="height:20rem; object-fit:cover;"
+            >
+          </a>
+
+          <!-- ❤️ WISHLIST -->
+          <% if (currUser) { %>
+            <form
+              action="/wishlist/<%= listing._id %>"
+              method="POST"
+              class="wishlist-form"
+            >
+              <button
+                type="submit"
+                class="wishlist-btn"
+                onclick="event.stopPropagation()"
+              >
+                <i class="fa-heart
+                  <%= wishlist.includes(listing._id.toString())
+                    ? 'fa-solid text-danger'
+                    : 'fa-regular'
+                  %>">
+                </i>
+              </button>
+            </form>
+          <% } %>
+
+          <!-- BODY -->
+          <div class="card-body d-flex flex-column">
+            <h6><%= listing.title %></h6>
+            <p class="text-muted mb-1">
+              <%= listing.location %>, <%= listing.country %>
+            </p>
+            <p class="fw-bold text-primary">
+              ₹<%= listing.price.toLocaleString("en-IN") %> / night
+            </p>
+            <a
+              href="/listings/<%= listing._id %>"
+              class="btn btn-outline-primary btn-sm mt-auto"
+            >
+              View Details
+            </a>
+          </div>
+
+        </div>
+      </div>
+    <% }) %>
+
+  </div>
+</div>

@@ -1,0 +1,233 @@
+<% layout('layouts/boilerplate') %>
+
+<!-- ================= BACK BUTTON ================= -->
+<div class="container mt-3">
+  <a
+    href="javascript:history.back()"
+    class="btn btn-light border d-inline-flex align-items-center gap-2"
+  >
+    <i class="fa-solid fa-arrow-left"></i>
+    Back
+  </a>
+</div>
+
+<div class="container mt-4">
+
+  <!-- ================= PROFILE ================= -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h4>Hello, <%= currUser.username %> 👋</h4>
+      <p class="text-muted mb-0"><%= currUser.email %></p>
+    </div>
+  </div>
+
+  <!-- ================= BOOKINGS ================= -->
+  <hr>
+  <h4>Your Bookings 🏨</h4>
+
+  <% if (!bookings || bookings.length === 0) { %>
+    <p class="text-muted">No bookings yet.</p>
+  <% } else { %>
+    <div class="row g-3 mb-4">
+      <% bookings.forEach(b => { %>
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <img
+              src="<%= b.listing?.image?.url %>"
+              class="card-img-top"
+              style="height:180px; object-fit:cover;"
+            >
+
+            <div class="card-body">
+              <h6><%= b.listing.title %></h6>
+
+              <p class="small mb-1">
+                <strong>From:</strong>
+                <%= new Date(b.checkIn).toDateString() %>
+              </p>
+
+              <p class="small mb-2">
+                <strong>To:</strong>
+                <%= new Date(b.checkOut).toDateString() %>
+              </p>
+
+              <!-- ❌ CANCEL BOOKING -->
+             <%
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const checkIn = new Date(b.checkIn);
+  checkIn.setHours(0,0,0,0);
+
+  const isPast = checkIn < today;
+  const isToday = checkIn.getTime() === today.getTime();
+%>
+
+<% if (isPast) { %>
+  <span class="badge bg-secondary w-100">
+    Past booking – cannot cancel
+  </span>
+
+<% } else if (isToday) { %>
+  <span class="badge bg-warning text-dark w-100">
+    Booking starts today – cancellation not allowed
+  </span>
+
+<% } else { %>
+  <form
+    action="/bookings/<%= b._id %>?_method=DELETE"
+    method="POST"
+    onsubmit="return confirm('Cancel this booking?')"
+  >
+    <button class="btn btn-sm btn-outline-danger w-100">
+      Cancel Booking
+    </button>
+  </form>
+<% } %>
+
+
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <!-- ================= TRAVEL WISHLIST ================= -->
+  <hr>
+  <h4>Your Travel Wishlist ✈️</h4>
+
+  <% if (!plans || plans.length === 0) { %>
+    <p class="text-muted">No travel plans yet.</p>
+  <% } else { %>
+    <div class="row g-3 mb-4">
+      <% plans.forEach(plan => { %>
+        <div class="col-md-4">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <strong><%= plan.location %></strong>
+
+              <a
+                href="/travel/<%= plan._id %>/recommendations"
+                class="btn btn-sm btn-outline-primary mt-2 d-block"
+              >
+                See stays
+              </a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <!-- ================= STATS ================= -->
+  <hr>
+  <div class="row g-4 mb-4 text-center">
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5><%= wishlist ? wishlist.length : 0 %></h5>
+          <p class="text-muted mb-0">Wishlist Items</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5><%= myListings ? myListings.length : 0 %></h5>
+          <p class="text-muted mb-0">My Listings</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= ❤️ WISHLIST ================= -->
+  <h4 class="mb-3 border-bottom pb-2">❤️ Your Wishlist</h4>
+
+  <% if (!wishlist || wishlist.length === 0) { %>
+    <p class="text-muted">Your wishlist is empty.</p>
+    <a href="/listings" class="btn btn-outline-primary mb-4">
+      Explore Listings
+    </a>
+  <% } else { %>
+    <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 g-4 mb-5">
+      <% wishlist.forEach(item => { %>
+        <div class="col">
+          <div class="card h-100 shadow-sm position-relative">
+
+            <!-- REMOVE FROM WISHLIST -->
+            <form
+              action="/wishlist/<%= item._id %>"
+              method="POST"
+              class="remove-wishlist-form"
+            >
+              <button class="remove-wishlist-btn" title="Remove">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </form>
+
+            <a href="/listings/<%= item._id %>">
+              <img
+                src="<%= item.image?.url %>"
+                class="card-img-top"
+                style="height:180px; object-fit:cover;"
+              >
+            </a>
+
+            <div class="card-body">
+              <h6 class="mb-1"><%= item.title %></h6>
+              <p class="text-muted mb-0">
+                ₹<%= item.price %> · <%= item.location %>
+              </p>
+            </div>
+
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <!-- ================= 🏠 MY LISTINGS ================= -->
+  <h4 class="mb-3 border-bottom pb-2">🏠 My Listings</h4>
+
+  <% if (!myListings || myListings.length === 0) { %>
+    <a href="/listings/new" class="btn btn-danger mb-4">
+      Become a Host · Create a Listing
+    </a>
+  <% } else { %>
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4 mb-5">
+      <% myListings.forEach(listing => { %>
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <img
+              src="<%= listing.image?.url %>"
+              class="card-img-top"
+              style="height:180px; object-fit:cover;"
+            >
+            <div class="card-body">
+              <h6><%= listing.title %></h6>
+              <div class="d-flex justify-content-between mt-2">
+                <a
+                  href="/listings/<%= listing._id %>"
+                  class="btn btn-sm btn-outline-primary"
+                >
+                  View
+                </a>
+                <a
+                  href="/listings/<%= listing._id %>/edit"
+                  class="btn btn-sm btn-outline-secondary"
+                >
+                  Edit
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+</div>
