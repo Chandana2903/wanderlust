@@ -2,8 +2,8 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const initData = require("./data.js");
 const Listing = require("../models/listing.js");
+const geocode = require("../utils/geocode");
 
-// CONNECT TO ATLAS
 const MONGO_URL = process.env.MONGO_URI;
 
 main()
@@ -19,21 +19,29 @@ const initDB = async () => {
     console.log("Clearing old listings...");
     await Listing.deleteMany({});
 
-    // 👉 REPLACE WITH REAL USER ID FROM ATLAS
-    const ownerId = new mongoose.Types.ObjectId("694a443768afa3de43e70c73");
+    const listings = [];
 
-    const listingsWithOwner = initData.data.map((obj) => ({
-      ...obj,
-      category: obj.category || "Rooms",   // ✔ ensure category exists
-      owner: ownerId,
-      geometry: {
-        type: "Point",
-        coordinates: [0, 0],
-      },
-    }));
+    for (let obj of initData.data) {
+      let geo = { lat: 0, lng: 0 };
 
-    await Listing.insertMany(listingsWithOwner);
-    console.log("🌱 Sample listings added successfully!");
+      try {
+        geo = await geocode(obj.location);
+      } catch (err) {
+        console.log("⚠️ Geocode failed for:", obj.location);
+      }
+
+      listings.push({
+        ...obj,
+        owner: new mongoose.Types.ObjectId("676d7c7870d7a785af3ec5aa"), // your admin user id
+        geometry: {
+          type: "Point",
+          coordinates: [geo.lng, geo.lat],
+        },
+      });
+    }
+
+    await Listing.insertMany(listings);
+    console.log("🌱 All sample listings seeded with real coordinates!");
   } catch (err) {
     console.log("Error seeding database:", err);
   } finally {

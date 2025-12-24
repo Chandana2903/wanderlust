@@ -76,32 +76,30 @@ module.exports.create = async (req, res) => {
 
   const newListing = new Listing(req.body.listing);
 
-  // 🌍 GEOCODE USING NOMINATIM (FREE)
   try {
-    const geoData = await geocode(req.body.listing.location);
+    const geoData = await geocode(newListing.location);
 
     newListing.geometry = {
       type: "Point",
-      coordinates: [geoData.lng, geoData.lat],  // lng, lat → correct order
+      coordinates: [geoData.lng, geoData.lat],
     };
   } catch (err) {
-    throw new ExpressError("Location not found. Please enter a valid city or area.", 400);
-
+    req.flash("error", "Invalid location. Please provide a valid city name.");
+    return res.redirect("/listings/new");
   }
 
-  // 🖼️ CLOUDINARY
   newListing.image = {
     url: req.file.path,
     filename: req.file.filename,
   };
 
   newListing.owner = req.user._id;
-
   await newListing.save();
 
   req.flash("success", "New listing created successfully");
   res.redirect(`/listings/${newListing._id}`);
 };
+
 
 // ================= UPDATE =================
 module.exports.update = async (req, res) => {
@@ -120,17 +118,19 @@ module.exports.update = async (req, res) => {
 
   // 🌍 RE-GEOCODE IF LOCATION UPDATED
   if (req.body.listing.location) {
-    try {
-      const geoData = await geocode(req.body.listing.location);
-      listing.geometry = {
-        type: "Point",
-        coordinates: [geoData.lng, geoData.lat],
-      };
-    } catch (err) {
-      req.flash("error", "Invalid location provided");
-      return res.redirect(`/listings/${id}/edit`);
-    }
+  try {
+    const geoData = await geocode(req.body.listing.location);
+
+    listing.geometry = {
+      type: "Point",
+      coordinates: [geoData.lng, geoData.lat],
+    };
+  } catch (err) {
+    req.flash("error", "Invalid updated location");
+    return res.redirect(`/listings/${id}/edit`);
   }
+}
+
 
   // 🔁 IMAGE UPDATE
   if (req.file) {
