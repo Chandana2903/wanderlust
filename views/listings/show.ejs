@@ -48,7 +48,6 @@
     <h5 class="mb-3 fw-semibold">Reserve this stay</h5>
 
     <form action="/bookings/<%= listing._id %>" method="POST" class="row g-3">
-
       <div class="col-md-6">
         <label class="form-label small text-muted">Check-in</label>
         <div class="position-relative">
@@ -72,7 +71,6 @@
       <p class="text-muted small text-center mt-1">
         Booking for today or past dates is not allowed.
       </p>
-
     </form>
   </div>
 </div>
@@ -87,7 +85,6 @@
 
   <h3 class="mb-3">Reviews</h3>
 
-  <!-- ================= SHOW ALL REVIEWS ================= -->
   <% if (listing.reviews.length === 0) { %>
     <p class="text-muted text-center">No reviews yet. Be the first!</p>
   <% } %>
@@ -97,25 +94,74 @@
 
       <!-- Username -->
       <h6 class="fw-semibold mb-1">
-        <%= review.author ? review.author.username : "Deleted User" %>
+        @<%= review.author ? review.author.username : "DeletedUser" %>
       </h6>
 
-      <!-- Starability Read-Only Stars -->
-      <div class="starability-result" data-rating="<%= review.rating %>"></div>
+      <!-- Animated Stars (Read Only) -->
+      <div class="starability-result animated-stars" data-rating="<%= review.rating %>"></div>
 
       <!-- Comment -->
-      <p class="mt-2 mb-1"><%= review.comment %></p>
+      <p class="mt-2 mb-2"><%= review.comment %></p>
 
-      <!-- Delete Button (only for author) -->
+      <!-- ===== USER OWN REVIEW ACTIONS ===== -->
       <% if (currUser && review.author && review.author._id.equals(currUser._id)) { %>
+      <div class="d-flex gap-2 mt-2">
+
+        <!-- DELETE -->
         <form 
           action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" 
           method="POST"
-          class="mt-2"
           onsubmit="return confirm('Delete this review?')"
         >
-          <button class="btn btn-sm btn-outline-danger">Delete</button>
+          <button class="btn btn-sm btn-outline-danger review-btn">
+            Delete
+          </button>
         </form>
+
+        <!-- EDIT TOGGLE -->
+        <button 
+          class="btn btn-sm btn-outline-primary review-btn"
+          onclick="document.getElementById('editForm-<%= review._id %>').classList.toggle('d-none')"
+        >
+          Edit
+        </button>
+
+      </div>
+
+      <!-- ===== EDIT FORM ===== -->
+      <form 
+        id="editForm-<%= review._id %>" 
+        class="card card-body mt-3 d-none"
+        action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=PUT"
+        method="POST"
+      >
+
+        <h6>Edit Review</h6>
+
+        <!-- Animated Stars -->
+        <fieldset class="starability-heart animated-rate">
+          <% for (let i = 1; i <= 5; i++) { %>
+            <input 
+              type="radio" 
+              id="edit-rate-<%= review._id %>-<%= i %>" 
+              name="review[rating]"
+              value="<%= i %>" 
+              <%= review.rating === i ? "checked" : "" %>
+            >
+            <label for="edit-rate-<%= review._id %>-<%= i %>"><%= i %></label>
+          <% } %>
+        </fieldset>
+
+        <textarea 
+          name="review[comment]" 
+          class="form-control mt-2" 
+          rows="3" 
+          required
+        ><%= review.comment %></textarea>
+
+        <button class="btn btn-primary btn-sm mt-3">Save Changes</button>
+      </form>
+
       <% } %>
 
     </div>
@@ -129,49 +175,32 @@
 
       <form action="/listings/<%= listing._id %>/reviews" method="POST" class="vstack gap-3">
 
-        <!-- Star Rating -->
-        <div>
-          <label class="form-label">Rating</label>
-
-          
-<fieldset class="starability-heart">
-  <legend>First rating:</legend>
-  <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="0" checked aria-label="No rating." />
-  <input type="radio" id="first-rate1" name="rating" value="1" />
-  <label for="first-rate1" title="Terrible">1 star</label>
-  <input type="radio" id="first-rate2" name="rating" value="2" />
-  <label for="first-rate2" title="Not good">2 stars</label>
-  <input type="radio" id="first-rate3" name="rating" value="3" />
-  <label for="first-rate3" title="Average">3 stars</label>
-  <input type="radio" id="first-rate4" name="rating" value="4" />
-  <label for="first-rate4" title="Very good">4 stars</label>
-  <input type="radio" id="first-rate5" name="rating" value="5" />
-  <label for="first-rate5" title="Amazing">5 stars</label>
-</fieldset>
-
+        <!-- Animated Star Rating -->
+        <fieldset class="starability-heart animated-rate">
+          <% for (let i = 1; i <= 5; i++) { %>
+            <input type="radio" id="rate-<%= i %>" name="review[rating]" value="<%= i %>">
+            <label for="rate-<%= i %>" title="<%= i %> stars"><%= i %></label>
+          <% } %>
+        </fieldset>
 
         <!-- Comment -->
         <div>
-          <label class="form-label">Comment</label>
           <textarea 
             name="review[comment]" 
             class="form-control" 
             rows="3" 
-            required 
+            required
             placeholder="Write your review..."
           ></textarea>
         </div>
 
-        <button class="btn btn-primary w-100">Submit Review</button>
+        <button class="btn btn-primary w-100 mt-2">Submit Review</button>
       </form>
     </div>
-  <% } else { %>
-    <p class="text-center mt-3">
-      <a href="/users/login">Login</a> to write a review.
-    </p>
   <% } %>
 
 </div>
+
 <!-- ================= MAP ================= -->
 <div class="mx-auto mb-4" style="max-width:650px;">
   <h3>Where you are</h3>
@@ -179,13 +208,11 @@
   <% 
     const lat = listing.geometry?.coordinates?.[1];
     const lng = listing.geometry?.coordinates?.[0];
-    const isInvalid = !lat || !lng || (lat === 0 && lng === 0);
+    const invalid = !lat || !lng || (lat === 0 && lng === 0);
   %>
 
-  <% if (isInvalid) { %>
-      <div class="alert alert-warning text-center">
-        Map not available for this listing
-      </div>
+  <% if (invalid) { %>
+      <div class="alert alert-warning text-center">Map not available for this listing</div>
   <% } else { %>
       <div
         id="map"
@@ -197,53 +224,57 @@
   <% } %>
 </div>
 
+<!-- ================= SCRIPTS ================= -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* ================= IMAGE MODAL ================= */
+  const img = document.getElementById("listingImage");
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImage");
+  const close = document.getElementById("closeModal");
+
+  if (img) img.onclick = () => {
+    modal.style.display = "flex";
+    modalImg.src = img.src;
+  };
+
+  if (close) close.onclick = () => modal.style.display = "none";
+
   /* ================= BOOKING DATE LOGIC ================= */
   const checkIn = document.querySelector("input[name='checkIn']");
   const checkOut = document.querySelector("input[name='checkOut']");
 
   if (checkIn && checkOut) {
-
-    // 👉 Tomorrow (no booking today or past)
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // 👉 Max booking = 6 months from today
-    const sixMonthsLater = new Date();
-    sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+    const sixMonths = new Date();
+    sixMonths.setMonth(sixMonths.getMonth() + 6);
 
-    const minDate = tomorrow.toISOString().split("T")[0];
-    const maxDate = sixMonthsLater.toISOString().split("T")[0];
+    checkIn.min = tomorrow.toISOString().split("T")[0];
+    checkOut.min = checkIn.min;
 
-    // Apply limits
-    checkIn.min = minDate;
-    checkIn.max = maxDate;
-
-    checkOut.min = minDate;
-    checkOut.max = maxDate;
-
-    // When check-in changes, update check-out
     checkIn.addEventListener("change", () => {
       checkOut.min = checkIn.value;
     });
   }
 
   /* ================= MAP ================= */
-  if (typeof L !== "undefined") {
-    const mapDiv = document.getElementById("map");
-    if (!mapDiv) return;
+  const mapDiv = document.getElementById("map");
+  if (mapDiv && typeof L !== "undefined") {
+    const lat = parseFloat(mapDiv.dataset.lat);
+    const lng = parseFloat(mapDiv.dataset.lng);
 
-    const lat = mapDiv.dataset.lat;
-    const lng = mapDiv.dataset.lng;
+    if (!isNaN(lat) && !isNaN(lng)) {
+      const map = L.map("map").setView([lat, lng], 13);
 
-    const map = L.map("map").setView([lat, lng], 14);
-    L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-      { attribution: "© Esri" }
-    ).addTo(map);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap",
+      }).addTo(map);
 
-    L.marker([lat, lng])
-      .addTo(map)
-      .bindPopup(mapDiv.dataset.location);
+      L.marker([lat, lng]).addTo(map).bindPopup(mapDiv.dataset.location);
+    }
   }
 });
 </script>

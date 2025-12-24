@@ -53,6 +53,14 @@ body{
   text-decoration: underline;
 }
 
+/* ===== UNIFIED DELETE + EDIT BUTTONS ===== */
+.review-btn {
+  padding: 4px 12px !important;
+  font-size: 0.75rem !important;
+  border-radius: 6px !important;
+}
+
+
 
 /* ---------- MOBILE VIEW ---------- */
 @media (max-width: 576px) {

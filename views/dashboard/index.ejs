@@ -39,7 +39,8 @@
             >
 
             <div class="card-body">
-              <h6><%= b.listing.title %></h6>
+              <h6><%= b.listing ? b.listing.title : "Listing Deleted" %></h6>
+
 
               <p class="small mb-1">
                 <strong>From:</strong>

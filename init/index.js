@@ -6,18 +6,23 @@ const geocode = require("../utils/geocode");
 
 const MONGO_URL = process.env.MONGO_URI;
 
-main()
-  .then(() => console.log("Connected to MongoDB Atlas"))
-  .catch((err) => console.log("DB Connection Error:", err));
-
-async function main() {
-  await mongoose.connect(MONGO_URL);
+async function connectDB() {
+  try {
+    await mongoose.connect(MONGO_URL);
+    console.log("Connected to MongoDB Atlas");
+  } catch (err) {
+    console.log("DB Connection Error:", err);
+  }
 }
 
 const initDB = async () => {
+  await connectDB();
+
   try {
     console.log("Clearing old listings...");
     await Listing.deleteMany({});
+
+    const adminOwner = new mongoose.Types.ObjectId("676d7c7870d7a785af3ec5aa");
 
     const listings = [];
 
@@ -27,21 +32,21 @@ const initDB = async () => {
       try {
         geo = await geocode(obj.location);
       } catch (err) {
-        console.log("⚠️ Geocode failed for:", obj.location);
+        console.log("⚠ Geocode failed for:", obj.location);
       }
 
       listings.push({
         ...obj,
-        owner: new mongoose.Types.ObjectId("676d7c7870d7a785af3ec5aa"), // your admin user id
+        owner: adminOwner,
         geometry: {
           type: "Point",
-          coordinates: [geo.lng, geo.lat],
-        },
+          coordinates: [geo.lng, geo.lat]
+        }
       });
     }
 
     await Listing.insertMany(listings);
-    console.log("🌱 All sample listings seeded with real coordinates!");
+    console.log("🌱 Listings seeded successfully!");
   } catch (err) {
     console.log("Error seeding database:", err);
   } finally {
