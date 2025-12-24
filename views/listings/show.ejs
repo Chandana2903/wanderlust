@@ -22,6 +22,7 @@
   <div class="card-body text-center">
     <h4 class="mb-1"><%= listing.title %></h4>
     <p class="mt-3 mb-0"><%= listing.description %></p>
+    <p class="mt-3 fw-bold fs-4 text-danger">₹<%= listing.price.toLocaleString("en-IN") %> / night</p>
   </div>
 </div>
 
@@ -41,18 +42,21 @@
   </div>
 <% } %>
 
-<!-- ================= BOOKING FORM ================= -->
+<!-- ================= BOOKING FORM WITH PRICE CALCULATION ================= -->
 <% if (currUser) { %>
 <div class="mx-auto mb-4" style="max-width:650px;">
   <div class="card shadow-sm p-4">
-    <h5 class="mb-3 fw-semibold">Reserve this stay</h5>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-semibold mb-0">Reserve this stay</h5>
+      <span class="fs-5 fw-bold text-danger">₹<%= listing.price.toLocaleString("en-IN") %> / night</span>
+    </div>
 
-    <form action="/bookings/<%= listing._id %>" method="POST" class="row g-3">
+    <form id="bookingForm" action="/bookings/<%= listing._id %>" method="POST" class="row g-3">
       <div class="col-md-6">
         <label class="form-label small text-muted">Check-in</label>
         <div class="position-relative">
           <i class="fa-solid fa-calendar-days position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-          <input type="date" name="checkIn" class="form-control ps-5" required>
+          <input type="date" name="checkIn" id="checkIn" class="form-control ps-5" required>
         </div>
       </div>
 
@@ -60,12 +64,31 @@
         <label class="form-label small text-muted">Check-out</label>
         <div class="position-relative">
           <i class="fa-solid fa-calendar-days position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-          <input type="date" name="checkOut" class="form-control ps-5" required>
+          <input type="date" name="checkOut" id="checkOut" class="form-control ps-5" required>
+        </div>
+      </div>
+
+      <!-- Price Breakdown -->
+      <div class="col-12 mt-3">
+        <div class="bg-light p-3 rounded">
+          <div class="d-flex justify-content-between mb-2">
+            <span>Nights:</span>
+            <strong id="nightsCount">0</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Price per night:</span>
+            <strong>₹<%= listing.price.toLocaleString("en-IN") %></strong>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between fs-5 fw-bold">
+            <span>Total:</span>
+            <strong id="totalPrice" class="text-danger">₹0</strong>
+          </div>
         </div>
       </div>
 
       <div class="col-12">
-        <button class="btn btn-danger w-100 py-2">Reserve</button>
+        <button type="submit" class="btn btn-danger w-100 py-2" id="reserveBtn" disabled>Reserve</button>
       </div>
 
       <p class="text-muted small text-center mt-1">
@@ -208,6 +231,7 @@
   <% 
     const lat = listing.geometry?.coordinates?.[1];
     const lng = listing.geometry?.coordinates?.[0];
+    const geometrySafe = JSON.stringify(listing.geometry || null);
     const invalid = !lat || !lng || (lat === 0 && lng === 0);
   %>
 
@@ -216,13 +240,13 @@
   <% } else { %>
       <div
         id="map"
-        data-lat="<%= lat %>"
-        data-lng="<%= lng %>"
+        data-geometry='<%= geometrySafe %>'
         data-location="<%= listing.location %>"
-        style="height:300px;border-radius:10px;"
+        style="height:300px; border-radius:10px;"
       ></div>
   <% } %>
 </div>
+
 <!-- ================= SCRIPTS ================= -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -236,57 +260,81 @@ document.addEventListener("DOMContentLoaded", function () {
   if (img) {
     img.onclick = function () {
       modal.style.display = "flex";
-      modalImg.src = img.src;
+      modalImg.src = this.src;
     };
   }
 
-  if (close) {
-    close.onclick = function () {
-      modal.style.display = "none";
-    };
+  if (close) close.onclick = () => modal.style.display = "none";
+  if (modal) modal.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
+
+  /* ================= PRICE CALCULATION & DATE LOGIC ================= */
+  const checkInInput = document.getElementById("checkIn");
+  const checkOutInput = document.getElementById("checkOut");
+  const nightsCount = document.getElementById("nightsCount");
+  const totalPriceEl = document.getElementById("totalPrice");
+  const reserveBtn = document.getElementById("reserveBtn");
+
+  const pricePerNight = Number("<%= listing.price %>") || 0;
+
+  // Set min date to tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDateStr = tomorrow.toISOString().split("T")[0];
+
+  // Set max date to 6 months ahead
+  const sixMonthsLater = new Date();
+  sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+  const maxDateStr = sixMonthsLater.toISOString().split("T")[0];
+
+  if (checkInInput && checkOutInput) {
+    checkInInput.min = minDateStr;
+    checkInInput.max = maxDateStr;
+    checkOutInput.min = minDateStr;
+    checkOutInput.max = maxDateStr;
   }
 
+  function calculatePrice() {
+    const checkInVal = checkInInput?.value;
+    const checkOutVal = checkOutInput?.value;
 
-  /* ================= BOOKING DATE LOGIC ================= */
-  const checkIn = document.querySelector("input[name='checkIn']");
-  const checkOut = document.querySelector("input[name='checkOut']");
-
-  if (checkIn && checkOut) {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const sixMonths = new Date();
-    sixMonths.setMonth(sixMonths.getMonth() + 6);
-
-    checkIn.min = tomorrow.toISOString().split("T")[0];
-    checkOut.min = checkIn.min;
-
-    checkIn.addEventListener("change", function () {
-      checkOut.min = checkIn.value;
-    });
-  }
-
-
-  /* ================= MAP ================= */
-  const mapDiv = document.getElementById("map");
-
-  if (mapDiv && typeof L !== "undefined") {
-    const lat = parseFloat(mapDiv.dataset.lat);
-    const lng = parseFloat(mapDiv.dataset.lng);
-
-    if (!isNaN(lat) && !isNaN(lng)) {
-      const map = L.map("map").setView([lat, lng], 13);
-
-      L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        { attribution: "© OpenStreetMap contributors" }
-      ).addTo(map);
-
-      L.marker([lat, lng])
-        .addTo(map)
-        .bindPopup(mapDiv.dataset.location);
+    if (!checkInVal || !checkOutVal) {
+      nightsCount.textContent = "0";
+      totalPriceEl.textContent = "₹0";
+      reserveBtn.disabled = true;
+      return;
     }
+
+    const checkInDate = new Date(checkInVal);
+    const checkOutDate = new Date(checkOutVal);
+
+    if (checkOutDate <= checkInDate) {
+      nightsCount.textContent = "Invalid";
+      totalPriceEl.textContent = "—";
+      reserveBtn.disabled = true;
+      return;
+    }
+
+    const diffTime = Math.abs(checkOutDate - checkInDate);
+    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    nightsCount.textContent = nights;
+    const total = nights * pricePerNight;
+    totalPriceEl.textContent = "₹" + total.toLocaleString("en-IN");
+
+    reserveBtn.disabled = false;
+  }
+
+  if (checkInInput) checkInInput.addEventListener("change", calculatePrice);
+  if (checkOutInput) checkOutInput.addEventListener("change", calculatePrice);
+
+  if (checkInInput) {
+    checkInInput.addEventListener("change", () => {
+      if (checkOutInput) checkOutInput.min = checkInInput.value || minDateStr;
+      calculatePrice();
+    });
   }
 
 });
 </script>
+
+<script src="/js/showMap.js"></script>
