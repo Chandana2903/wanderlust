@@ -223,10 +223,9 @@
       ></div>
   <% } %>
 </div>
-
 <!-- ================= SCRIPTS ================= -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function () {
 
   /* ================= IMAGE MODAL ================= */
   const img = document.getElementById("listingImage");
@@ -234,12 +233,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalImg = document.getElementById("modalImage");
   const close = document.getElementById("closeModal");
 
-  if (img) img.onclick = () => {
-    modal.style.display = "flex";
-    modalImg.src = img.src;
-  };
+  if (img) {
+    img.onclick = function () {
+      modal.style.display = "flex";
+      modalImg.src = img.src;
+    };
+  }
 
-  if (close) close.onclick = () => modal.style.display = "none";
+  if (close) {
+    close.onclick = function () {
+      modal.style.display = "none";
+    };
+  }
+
 
   /* ================= BOOKING DATE LOGIC ================= */
   const checkIn = document.querySelector("input[name='checkIn']");
@@ -255,13 +261,15 @@ document.addEventListener("DOMContentLoaded", () => {
     checkIn.min = tomorrow.toISOString().split("T")[0];
     checkOut.min = checkIn.min;
 
-    checkIn.addEventListener("change", () => {
+    checkIn.addEventListener("change", function () {
       checkOut.min = checkIn.value;
     });
   }
 
+
   /* ================= MAP ================= */
   const mapDiv = document.getElementById("map");
+
   if (mapDiv && typeof L !== "undefined") {
     const lat = parseFloat(mapDiv.dataset.lat);
     const lng = parseFloat(mapDiv.dataset.lng);
@@ -269,12 +277,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!isNaN(lat) && !isNaN(lng)) {
       const map = L.map("map").setView([lat, lng], 13);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap",
-      }).addTo(map);
+      L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        { attribution: "© OpenStreetMap contributors" }
+      ).addTo(map);
 
-      L.marker([lat, lng]).addTo(map).bindPopup(mapDiv.dataset.location);
+      L.marker([lat, lng])
+        .addTo(map)
+        .bindPopup(mapDiv.dataset.location);
     }
   }
+
 });
 </script>
