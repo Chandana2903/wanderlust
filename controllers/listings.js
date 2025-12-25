@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Listing = require("../models/listing");
-const ExpressError = require("../utils/expresserror");
+const ExpressError = require("../utils/ExpressError");
 const { cloudinary } = require("../cloudConfig");
 const geocode = require("../utils/geocode");
 

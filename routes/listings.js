@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 const Listing = require("../models/listing");
 const wrapAsync = require("../utils/wrapAsync");
-const ExpressError = require("../utils/expresserror");
+const ExpressError = require("../utils/ExpressError");
 const { listingSchema } = require("../schema");
 const { isLoggedIn } = require("../middleware");
 
