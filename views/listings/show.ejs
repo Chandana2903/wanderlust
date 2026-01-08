@@ -206,16 +206,23 @@
           <% } %>
         </fieldset>
 
-        <!-- Comment -->
-        <div>
-          <textarea 
-            name="review[comment]" 
-            class="form-control" 
-            rows="3" 
-            required
-            placeholder="Write your review..."
-          ></textarea>
-        </div>
+        <!-- ⭐ Rating Error -->
+      <p id="ratingError" class="text-danger small d-none">
+        Please select a rating before submitting.
+      </p>
+
+      <!-- 📝 Comment -->
+      <div>
+        <label class="form-label fw-semibold mb-1">Add a comment</label>
+        <textarea 
+          name="review[comment]" 
+          class="form-control" 
+          rows="3" 
+          required
+          placeholder="Write your review..."
+        ></textarea>
+      </div>
+
 
         <button class="btn btn-primary w-100 mt-2">Submit Review</button>
       </form>
@@ -265,7 +272,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (close) close.onclick = () => modal.style.display = "none";
-  if (modal) modal.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
+  if (modal) modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.style.display = "none";
+  });
 
   /* ================= PRICE CALCULATION & DATE LOGIC ================= */
   const checkInInput = document.getElementById("checkIn");
@@ -276,12 +285,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const pricePerNight = Number("<%= listing.price %>") || 0;
 
-  // Set min date to tomorrow
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDateStr = tomorrow.toISOString().split("T")[0];
 
-  // Set max date to 6 months ahead
   const sixMonthsLater = new Date();
   sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
   const maxDateStr = sixMonthsLater.toISOString().split("T")[0];
@@ -314,13 +321,11 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const diffTime = Math.abs(checkOutDate - checkInDate);
+    const diffTime = checkOutDate - checkInDate;
     const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     nightsCount.textContent = nights;
-    const total = nights * pricePerNight;
-    totalPriceEl.textContent = "₹" + total.toLocaleString("en-IN");
-
+    totalPriceEl.textContent = "₹" + (nights * pricePerNight).toLocaleString("en-IN");
     reserveBtn.disabled = false;
   }
 
@@ -331,6 +336,27 @@ document.addEventListener("DOMContentLoaded", function () {
     checkInInput.addEventListener("change", () => {
       if (checkOutInput) checkOutInput.min = checkInInput.value || minDateStr;
       calculatePrice();
+    });
+  }
+
+  /* ================= REVIEW VALIDATION ================= */
+  const reviewForm = document.getElementById("reviewForm");
+  if (reviewForm) {
+    const ratingInputs = reviewForm.querySelectorAll(
+      'input[name="review[rating]"]'
+    );
+    const ratingError = document.getElementById("ratingError");
+
+    reviewForm.addEventListener("submit", (e) => {
+      const ratingSelected = [...ratingInputs].some(r => r.checked);
+
+      if (!ratingSelected) {
+        e.preventDefault(); // ⛔ stop submit
+        ratingError.classList.remove("d-none");
+        ratingError.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else {
+        ratingError.classList.add("d-none");
+      }
     });
   }
 

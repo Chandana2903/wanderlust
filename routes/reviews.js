@@ -6,6 +6,7 @@ const Listing = require("../models/listing");
 const wrapAsync = require("../utils/wrapAsync");
 const { reviewSchema } = require("../schema");
 const { isLoggedIn } = require("../middleware");
+const ExpressError = require("../utils/ExpressError");
 
 // JOI validation
 const validateReview = (req, res, next) => {
