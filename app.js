@@ -31,7 +31,9 @@ const dbUrl = process.env.MONGO_URI;
 
 // ---------------- MONGOOSE ----------------
 mongoose
-  .connect(dbUrl)
+  .connect(dbUrl, {
+    dbName: "wanderlust",
+  })
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.log("❌ MongoDB error:", err));
 
