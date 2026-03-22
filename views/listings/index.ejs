@@ -144,11 +144,11 @@
 
           <!-- IMAGE -->
           <a href="/listings/<%= listing._id %>">
-            <img
-              src="<%= listing.image?.url %>"
-              class="card-img-top rounded-4"
-              style="height:20rem; object-fit:cover;"
-            >
+            <img 
+  src="<%= listing.image && listing.image.url ? listing.image.url : 'https://via.placeholder.com/400' %>" 
+  class="card-img-top rounded-4"
+  style="height:20rem; object-fit:cover;"
+>
           </a>
 
           <!-- ❤️ WISHLIST -->

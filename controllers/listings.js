@@ -1,3 +1,4 @@
+//controllers/listings.js
 const mongoose = require("mongoose");
 const Listing = require("../models/listing");
 const ExpressError = require("../utils/ExpressError");
